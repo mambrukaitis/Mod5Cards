@@ -40,6 +40,10 @@ struct CardsApp: App {
     WindowGroup {
       CardsListView()
         .environmentObject(store)
+        .onAppear {
+          print(URL.documentsDirectory)
+        }
     }
   }
 }
+
