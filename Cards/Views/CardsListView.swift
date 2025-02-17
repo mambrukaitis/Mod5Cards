@@ -36,10 +36,66 @@ struct CardsListView: View {
   @EnvironmentObject var store: CardStore
   @State private var selectedCard: Card?
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
+    var columns: [GridItem] {
+        [
+            GridItem(.adaptive(minimum: thumbnailSize.width))
+        ]
+    }
+    
+    var thumbnailSize: CGSize {
+        var scale: CGFloat = 1
+        if verticalSizeClass == .regular,
+           horizontalSizeClass == .regular {
+            scale = 1.5
+        }
+        return Settings.thumbnailSize * scale
+    }
+    
+    var createButton: some View {
+        Button {
+            selectedCard = store.addCard()
+        } label: {
+            Label("Create New", systemImage: "plus")
+                .frame(maxWidth: .infinity)
+        }
+        .font(.system(size: 16, weight: .bold))
+        .padding([.top, .bottom], 10)
+        .background(Color("barColor"))
+        .accentColor(.white)
+    }
+    
+    var initialView: some View {
+        VStack {
+            Spacer()
+            let card = Card(
+                backgroundColor: Color(uiColor: .systemBackground))
+            ZStack {
+                CardThumbnail(card: card)
+                Image(systemName: "plus.circle.fill")
+                    .font(.largeTitle)
+            }
+            .frame(
+                width: thumbnailSize.width * 1.2,
+                height: thumbnailSize.height * 1.2)
+            .onTapGesture {
+                selectedCard = store.addCard()
+            }
+            Spacer()
+        }
+    }
+    
   var body: some View {
       VStack {
-          list
+          Group {
+              if store.cards.isEmpty {
+                  initialView
+              } else {
+                  list
+              }
+          }
               .fullScreenCover(item: $selectedCard) { card in
                   if let index = store.index(for: card) {
                       SingleCardView(card: $store.cards[index])
@@ -52,15 +108,16 @@ struct CardsListView: View {
                       fatalError("Unable to locate selected card")
                   }
               }
-          Button("Add") {
-              selectedCard = store.addCard()
-          }
+          createButton
       }
+      .background(
+        Color("background")
+            .ignoresSafeArea())
   }
 
   var list: some View {
     ScrollView(showsIndicators: false) {
-      VStack {
+        LazyVGrid(columns: columns, spacing: 30) {
         ForEach(store.cards) { card in
           CardThumbnail(card: card)
             //allows the ability to remove cards
@@ -71,12 +128,16 @@ struct CardsListView: View {
                         Label("Delete", systemImage: "trash")
                     }
                 }
-            .onTapGesture {
-              selectedCard = card
-            }
+                .onTapGesture {
+                  selectedCard = card
+                }
+                .frame(
+                    width: thumbnailSize.width,
+                    height: thumbnailSize.height)
         }
       }
     }
+    .padding(.top, 20)
   }
 }
 

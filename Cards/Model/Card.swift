@@ -38,9 +38,11 @@ struct Card: Identifiable {
     var elements: [CardElement] = []
 
     //adds an image to the elements array, and saves it to the disk with a UUID string name, and the image file
-    mutating func addElement(uiImage: UIImage) {
+    mutating func addElement(uiImage: UIImage, at offset: CGSize = .zero) {
         let imageFilename = uiImage.save()
+        let transform = Transform(offset: offset)
         let element = ImageElement(
+            transform: transform,
             uiImage: uiImage,
             imageFilename: imageFilename)
         elements.append(element)
@@ -51,12 +53,12 @@ struct Card: Identifiable {
         elements.append(text)
     }
     //allows both text and image elements to be added respectively
-    mutating func addElements(from transfer: [CustomTransfer]) {
+    mutating func addElements(from transfer: [CustomTransfer], at offset: CGSize) {
         for element in transfer {
             if let text = element.text {
                 addElement(text: TextElement(text: text))
             } else if let image = element.image {
-                addElement(uiImage: image)
+                addElement(uiImage: image, at: offset)
             }
         }
     }

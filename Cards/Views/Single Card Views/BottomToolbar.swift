@@ -33,61 +33,81 @@
 import SwiftUI
 
 struct ToolbarButton: View {
-  let modal: ToolbarSelection
-  private let modalButton: [
-    ToolbarSelection: (text: String, imageName: String)
-  ] = [
-    .photoModal: ("Photos", "photo"),
-    .frameModal: ("Frames", "square.on.circle"),
-    .stickerModal: ("Stickers", "heart.circle"),
-    .textModal: ("Text", "textformat")
-  ]
-
-  var body: some View {
-    if let text = modalButton[modal]?.text,
-      let imageName = modalButton[modal]?.imageName {
-      VStack {
-        Image(systemName: imageName)
-          .font(.largeTitle)
-        Text(text)
-      }
-      .padding(.top)
-    }
-  }
-}
-
-struct BottomToolbar: View {
-    @Binding var modal: ToolbarSelection?
-    @Binding var card: Card
-    @EnvironmentObject var store: CardStore
-
-    func defaultButton(_ selection: ToolbarSelection) -> some View {
-        Button {
-            modal = selection
-        } label: {
-            ToolbarButton(modal: selection)
+    @Environment(\.verticalSizeClass) var verticalSizeClass
+    let modal: ToolbarSelection
+    private let modalButton: [
+        ToolbarSelection: (text: String, imageName: String)
+    ] = [
+        .photoModal: ("Photos", "photo"),
+        .frameModal: ("Frames", "square.on.circle"),
+        .stickerModal: ("Stickers", "heart.circle"),
+        .textModal: ("Text", "textformat")
+    ]
+    
+    func regularView(
+        _ imageName: String,
+        _ text: String
+    ) -> some View {
+        VStack(spacing: 2) {
+            Image(systemName: imageName)
+            Text(text)
         }
+        .frame(minWidth: 60)
+        .padding(.top, 5)
     }
     
-  var body: some View {
-    HStack {
-      ForEach(ToolbarSelection.allCases) { selection in
-          switch selection {
-          case .photoModal:
-              Button {
-              } label: {
-                  PhotosModal(card: $card)
-              }
-          case .frameModal:
-              defaultButton(selection)
-                  .disabled(store.selectedElement == nil || !(store.selectedElement is ImageElement))
-          default:
-              defaultButton(selection)
-          }
-      }
+    func compactView(_ imageName: String) -> some View {
+        VStack(spacing: 2) {
+            Image(systemName: imageName)
+        }
+        .frame(minWidth: 60)
+        .padding(.top, 5)
     }
-  }
+    
+    var body: some View {
+        if let text = modalButton[modal]?.text,
+           let imageName = modalButton[modal]?.imageName {
+            if verticalSizeClass == .compact {
+                compactView(imageName)
+            } else {
+                regularView(imageName, text)
+            }
+        }
+    }
 }
+
+    struct BottomToolbar: View {
+        @Binding var modal: ToolbarSelection?
+        @Binding var card: Card
+        @EnvironmentObject var store: CardStore
+        
+        var body: some View {
+            HStack(alignment: .bottom) {
+                ForEach(ToolbarSelection.allCases) { selection in
+                    switch selection {
+                    case .photoModal:
+                        Button {
+                        } label: {
+                            PhotosModal(card: $card)
+                        }
+                    case .frameModal:
+                        defaultButton(selection)
+                            .disabled(store.selectedElement == nil || !(store.selectedElement is ImageElement))
+                    default:
+                        defaultButton(selection)
+                    }
+                }
+            }
+        }
+        
+        func defaultButton(_ selection: ToolbarSelection) -> some View {
+            Button {
+                modal = selection
+            } label: {
+                ToolbarButton(modal: selection)
+            }
+        }
+    }
 
 
 struct BottomToolbar_Previews: PreviewProvider {

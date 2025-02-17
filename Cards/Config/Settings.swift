@@ -38,9 +38,29 @@ enum Settings {
   static let thumbnailSize =
     CGSize(width: 150, height: 250)
   static let defaultElementSize =
-    CGSize(width: 250, height: 180)
+    CGSize(width: 800, height: 800)
   static let borderColor: Color = .blue
   static let borderWidth: CGFloat = 5
+    
+    //calculates size and scale of a view w/ correct aspect ratio
+    static func calculateSize(_ size: CGSize) -> CGSize {
+        var newSize = size
+        let ratio =
+            Settings.cardSize.width / Settings.cardSize.height
+        if size.width < size.height {
+            newSize.height = min(size.height, newSize.width / ratio)
+            newSize.width = min(size.width, newSize.height * ratio)
+        } else {
+            newSize.width = min(size.width, newSize.height * ratio)
+            newSize.height = min(size.height, newSize.width / ratio)
+        }
+        return newSize
+    }
+
+    static func calculateScale(_ size: CGSize) -> CGFloat {
+        let newSize = calculateSize(size)
+        return newSize.width / Settings.cardSize.width
+    }
 }
 
 //from chapter 20 starter

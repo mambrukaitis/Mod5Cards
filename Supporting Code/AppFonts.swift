@@ -30,27 +30,26 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 
-import SwiftUI
+import Foundation
 
-struct CardThumbnail: View {
-  let card: Card
-
-  var body: some View {
-      card.backgroundColor
-          .cornerRadius(10)
-          .shadow(
-            color: Color("shadow-color"),
-            radius: 3,
-            x: 0.0,
-            y: 0.0)
-  }
-}
-
-struct CardThumbnail_Previews: PreviewProvider {
-  static var previews: some View {
-    CardThumbnail(card: initialCards[0])
-          .frame(
-            width: Settings.thumbnailSize.width,
-            height: Settings.thumbnailSize.height)
-  }
+enum AppFonts {
+  static let fonts = [
+    "San Fransisco",
+    "AmericanTypewriter",
+    "Avenir-Heavy",
+    "Avenir-Book",
+    "Baskerville-Italic",
+    "ChalkboardSE-Regular",
+    "Chalkduster",
+    "Cochin-BoldItalic",
+    "Copperplate",
+    "GillSans-UltraBold",
+    "MarkerFelt-Wide",
+    "Noteworthy-Bold",
+    "Verdana-Bold",
+    "Papyrus",
+    "PartyLetPlain",
+    "SavoyeLetPlain",
+    "SnellRoundhand-Black"
+  ]
 }
