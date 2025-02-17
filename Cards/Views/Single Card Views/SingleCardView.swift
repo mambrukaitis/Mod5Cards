@@ -39,18 +39,23 @@ struct SingleCardView: View {
   var body: some View {
     NavigationStack {
         GeometryReader { proxy in
-            CardDetailView(card: $card, viewScale: Settings.calculateScale(proxy.size))
+            CardDetailView(card: $card, viewScale: Settings.calculateScale(proxy.size), proxy: proxy)
                 .modifier(CardToolbar(
                     currentModal: $currentModal,
                     card: $card))
-                .onDisappear {
-                    card.save()
-                }
                 .frame(
                     width: Settings.calculateSize(proxy.size).width,
                     height: Settings.calculateSize(proxy.size).height)
                 .clipped()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .onDisappear {
+                  let uiImage = UIImage.screenshot(
+                    card: card,
+                    size: Settings.cardSize * 0.2)
+                  _ = uiImage.save(to: card.id.uuidString)
+                  card.uiImage = uiImage
+                  card.save()
+                }
         }
     }
   }

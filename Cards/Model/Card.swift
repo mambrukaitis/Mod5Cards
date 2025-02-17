@@ -36,6 +36,7 @@ struct Card: Identifiable {
     var id = UUID()
     var backgroundColor: Color = .yellow
     var elements: [CardElement] = []
+    var uiImage: UIImage?
 
     //adds an image to the elements array, and saves it to the disk with a UUID string name, and the image file
     mutating func addElement(uiImage: UIImage, at offset: CGSize = .zero) {

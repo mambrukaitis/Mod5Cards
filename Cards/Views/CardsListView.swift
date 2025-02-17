@@ -38,6 +38,7 @@ struct CardsListView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.verticalSizeClass) var verticalSizeClass
+    @State private var listState = ListState.list
 
     var columns: [GridItem] {
         [
@@ -89,13 +90,21 @@ struct CardsListView: View {
     
   var body: some View {
       VStack {
+          ListSelection(listState: $listState)
           Group {
-              if store.cards.isEmpty {
-                  initialView
-              } else {
-                  list
-              }
-          }
+                  if store.cards.isEmpty {
+                    initialView
+                  } else {
+                    Group {
+                      switch listState {
+                      case .list:
+                        list
+                      case .carousel:
+                        Carousel(selectedCard: $selectedCard)
+                      }
+                    }
+                  }
+                }
               .fullScreenCover(item: $selectedCard) { card in
                   if let index = store.index(for: card) {
                       SingleCardView(card: $store.cards[index])

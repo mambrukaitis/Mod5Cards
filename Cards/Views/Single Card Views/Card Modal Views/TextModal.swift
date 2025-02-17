@@ -9,9 +9,18 @@ struct TextModal: View {
         let onCommit = {
             dismiss()
         }
-        TextField(
-            "Enter text", text: $textElement.text, onCommit: onCommit)
-        .padding(20)
+        VStack {
+              TextField(
+                "Enter text",
+                text: $textElement.text,
+              onCommit: onCommit)
+              .font(.custom(textElement.textFont, size: 30))
+              .foregroundColor(textElement.textColor)
+              .padding(40)
+              TextView(
+                font: $textElement.textFont,
+                color: $textElement.textColor)
+            }
     }
 }
 
